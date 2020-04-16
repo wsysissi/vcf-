@@ -1,0 +1,54 @@
+'''
+
+
+
+'''
+
+import vcf
+import codecs
+import re
+
+def get_id (txt) : #输入为字符串
+    match = re.match(r'(.*):(.*)',txt,re.M|re.I)
+    name = match.group(1)
+    match2 = re.search(r'chr(.*):',name,re.M|re.I)
+    id = match2.group(1)
+    return id
+def get_value (txt) : #输入为字符串
+    match = re.match(r'(.*):(.*)',txt,re.M|re.I)
+    value = match.group(1)
+    return value
+
+f = codecs.open('test_tabix.txt', mode='r', encoding='utf-8')  # 打开txt文件，以‘utf-8’编码读取
+line = f.readline()   # 以行的形式进行读取文件
+list1 = []
+while line:
+    a = line.split()
+    b = a[2:3]   # 这是选取需要读取的位数
+    list1.append(b)  # 将其添加在列表之中
+    line = f.readline()
+f.close()
+
+chorm = []
+for i in list1 :
+    for j in i :
+        id = get_id(j)
+        value = get_value(j)
+        chorm.append([id,value])
+        
+'''
+for i in chorm:
+    print (i)
+
+'''
+vcf_reader = vcf.Reader(open('input.vcf', 'r'))
+for record in vcf_reader:
+    for i in chorm :
+     if record.CHROM == i[0] & record.POS == i[1] :
+         
+
+
+
+
+
+    
