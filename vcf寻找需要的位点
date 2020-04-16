@@ -1,33 +1,40 @@
 '''
-readme
-用户需根据提示输入相应的
+READ ME
+命令使用四个个文件，文件1为脚本名称py文件，文件2为想要寻找的位点txt文件，文件3为全部微单信息vcf文件，文件4为想要储存查找到信息的txt文件
+用命令行运行命令，python 文件1 文件2 文件3 文件4
+*注意： 需要程序处理的文件需放入与程序相同的文件夹，
+        命令行里不能出现中文需修改文件名
 
+EXAMPLE：
+python 2017141011017.py test_tabix.txt input.vcf 2017141011017.txt
+
+siyi 2020-04-16
 
 '''
-
+import sys
 import vcf
 import codecs
 import re
 
-def get_id (txt) : #输入为字符串
+def get_id (txt) : 
     match = re.match(r'(.*):(.*)',txt,re.M|re.I)
     name = match.group(1)
     match2 = re.search(r'chr(.*):',name,re.M|re.I)
     id = match2.group(1)
     return id
-def get_value (txt) : #输入为字符串
+def get_value (txt) : 
     match = re.match(r'(.*):(.*)',txt,re.M|re.I)
     value = match.group(2)
     return value
 
 def read_txt(test_tabix) :
-    f = codecs.open(test_tabix , mode='r', encoding='utf-8')  # 打开txt文件，以‘utf-8’编码读取
-    line = f.readline()   # 以行的形式进行读取文件
+    f = codecs.open(test_tabix , mode='r', encoding='utf-8') 
+    line = f.readline()  
     list1 = []
     while line:
         a = line.split()
-        b = a[2:3]   # 这是选取需要读取的位数
-        list1.append(b)  # 将其添加在列表之中
+        b = a[2:3]   
+        list1.append(b)  
         line = f.readline()
     f.close()
 
@@ -39,16 +46,9 @@ def read_txt(test_tabix) :
             chorm.append([id,value])
     return chorm
 
-'''        
-chorm = read_txt('test_tabix.txt')
-for i in chorm:
-    print (i)
-
-'''
-
-vcf_reader = vcf.Reader(open('input.vcf', 'r'))
-f = open('2017141011017王思懿.txt','a')
-chorm = read_txt('test_tabix.txt')
+vcf_reader = vcf.Reader(open(sys.argv[3], 'r'))
+f = open(sys.argv[2],'a')
+chorm = read_txt(sys.argv[1])
 exist = []
 num = 1
 for record in vcf_reader:
@@ -61,6 +61,7 @@ for record in vcf_reader:
                 f.write(sample['GT']+"\n")
             exist.append(i)
 f.close()
+
 
 
 
