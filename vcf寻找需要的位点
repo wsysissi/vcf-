@@ -1,5 +1,6 @@
 '''
-
+readme
+用户需根据提示输入相应的
 
 
 '''
@@ -16,36 +17,50 @@ def get_id (txt) : #输入为字符串
     return id
 def get_value (txt) : #输入为字符串
     match = re.match(r'(.*):(.*)',txt,re.M|re.I)
-    value = match.group(1)
+    value = match.group(2)
     return value
 
-f = codecs.open('test_tabix.txt', mode='r', encoding='utf-8')  # 打开txt文件，以‘utf-8’编码读取
-line = f.readline()   # 以行的形式进行读取文件
-list1 = []
-while line:
-    a = line.split()
-    b = a[2:3]   # 这是选取需要读取的位数
-    list1.append(b)  # 将其添加在列表之中
-    line = f.readline()
-f.close()
+def read_txt(test_tabix) :
+    f = codecs.open(test_tabix , mode='r', encoding='utf-8')  # 打开txt文件，以‘utf-8’编码读取
+    line = f.readline()   # 以行的形式进行读取文件
+    list1 = []
+    while line:
+        a = line.split()
+        b = a[2:3]   # 这是选取需要读取的位数
+        list1.append(b)  # 将其添加在列表之中
+        line = f.readline()
+    f.close()
 
-chorm = []
-for i in list1 :
-    for j in i :
-        id = get_id(j)
-        value = get_value(j)
-        chorm.append([id,value])
-        
-'''
+    chorm = []
+    for i in list1 :
+        for j in i :
+            id = get_id(j)
+            value = get_value(j)
+            chorm.append([id,value])
+    return chorm
+
+'''        
+chorm = read_txt('test_tabix.txt')
 for i in chorm:
     print (i)
 
 '''
+
 vcf_reader = vcf.Reader(open('input.vcf', 'r'))
+f = open('2017141011017王思懿.txt','a')
+chorm = read_txt('test_tabix.txt')
+exist = []
+num = 1
 for record in vcf_reader:
     for i in chorm :
-     if record.CHROM == i[0] & record.POS == i[1] :
-         
+        if record.CHROM == i[0] and int(record.POS) == int(i[1]) and (i not in exist):
+            print(num)
+            num +=1
+            f.write("chr"+str(record.CHROM)+"\t"+str(record.POS)+"\t"+record.REF[0]+"\t"+str(record.ALT[0])+"\t")
+            for sample in record.samples:
+                f.write(sample['GT']+"\n")
+            exist.append(i)
+f.close()
 
 
 
